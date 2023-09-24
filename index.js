@@ -15,14 +15,14 @@ app.use("/api/auth", authRoutes)
 app.use("/api/posts", postRoutes)
 
 app.get('/', (req, res) => {
-  res.json("Slayyy2")
+  res.json("Slayyy3")
 });
 
 const PORT = process.env.PORT
 const httpsServer = https.createServer(
   {
-    key: fs.readFileSync("key.pem"),
-    cert: fs.readFileSync("cert.pem"),
+    key: fs.readFileSync(process.env.CERT_KEY_PATH),
+    cert: fs.readFileSync(process.env.CERT_FULL_PATH)
   },
   app
 ).listen(PORT, () => {
