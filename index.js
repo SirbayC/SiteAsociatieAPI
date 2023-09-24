@@ -3,6 +3,8 @@ import authRoutes from "./routes/authRoute.js"
 import postRoutes from "./routes/postRoute.js"
 import cors from "cors"
 import 'dotenv/config'
+import https from "https"
+import fs from "fs"
 
 const app = express()
 
@@ -17,8 +19,13 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT
-
-app.listen(PORT, () => {
+const httpsServer = https.createServer(
+  {
+    key: fs.readFileSync("key.pem"),
+    cert: fs.readFileSync("cert.pem"),
+  },
+  app
+).listen(PORT, () => {
   console.log(`Api Running on ${PORT}!`)
 })
 
