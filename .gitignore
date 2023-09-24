@@ -1,0 +1,7 @@
+node_modules
+*.lock
+*.docx
+*.env
+external
+build
+SecureLocal
