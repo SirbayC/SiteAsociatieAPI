@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import 'dotenv/config'
 
 export const login = (req, res) => {
     if(req.body.username === process.env.ADMIN_USERNAME){

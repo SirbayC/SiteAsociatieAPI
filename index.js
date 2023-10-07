@@ -1,11 +1,12 @@
 import express from "express"
 import authRoutes from "./routes/authRoute.js"
-// import postRoutes from "./routes/postRoute.js"
+import postRoutes from "./routes/postRoute.js"
 import cors from "cors"
 import 'dotenv/config'
 import https from "https"
 import fs from "fs"
-import { runApp } from "./db.js"
+import { } from "./db.js"
+import oracledb from "oracledb";
 
 const app = express()
 
@@ -13,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use("/auth", authRoutes)
-// app.use("/posts", postRoutes)
+app.use("/posts", postRoutes)
 
 app.get('/', (req, res) => {
   res.json("Hi from the server! v2.1")
@@ -30,4 +31,19 @@ const httpsServer = https.createServer(
   console.log(`Api Running on ${PORT}!`)
 })
 
-runApp()
+let connection;
+try {
+  console.log("Testing db connection...");
+  connection = await oracledb.getConnection();
+  console.log("Connected!");
+} catch (err) {
+  console.error(err);
+} finally {
+  if (connection) {
+    try {
+      await connection.close();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
