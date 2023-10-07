@@ -7,7 +7,16 @@ export const getPosts = async (req, res) => {
     try {
         connection = await oracledb.getConnection();
         const result = await connection.execute(`SELECT * FROM posts`);
-        res.status(200).json(result.rows)
+        res.status(200).json(result.rows.map(item => {
+            return {
+                id : item[0],
+                title: item[1],
+                desc: item[2],
+                dateCreated: item[3],
+                dateUpdated: item[4],
+                author: item[5],
+            }
+        }))
     } catch (err) {
         console.error(err);
         res.status(500).json("Server error - db comm")
@@ -33,7 +42,6 @@ export const getPosts = async (req, res) => {
 //     catch (err) {
 //         return res.status(500).json("Server error - db comm")
 //     }
-
 // }
 
 // export const addPost = (req, res) => {
