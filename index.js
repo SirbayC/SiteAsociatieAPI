@@ -1,5 +1,5 @@
 import express from "express"
-// import authRoutes from "./routes/authRoute.js"
+import authRoutes from "./routes/authRoute.js"
 // import postRoutes from "./routes/postRoute.js"
 import cors from "cors"
 import 'dotenv/config'
@@ -12,11 +12,11 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-// app.use("/auth", authRoutes)
+app.use("/auth", authRoutes)
 // app.use("/posts", postRoutes)
 
 app.get('/', (req, res) => {
-  res.json("Hi from the server! xddd")
+  res.json("Hi from the server! v2.1")
 });
 
 const PORT = process.env.PORT
