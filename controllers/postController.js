@@ -2,11 +2,13 @@ import oracledb from "oracledb";
 import jwt from "jsonwebtoken"
 
 export const getPosts = async (req, res) => {
-
     let connection;
     try {
         connection = await oracledb.getConnection();
         const result = await connection.execute(`SELECT * FROM posts`);
+        if(result.rows.length == 0){
+            return res.status(404).json("No post with that id!")
+        }
         res.status(200).json(result.rows.map(item => {
             return {
                 id : item[0],
@@ -32,17 +34,38 @@ export const getPosts = async (req, res) => {
     return res
 }
 
-// export const getPost = async (req, res) => {
-//     try {
-//         const posts = await db`SELECT * FROM posts WHERE id = ${req.params.id}`
-//         if (!posts[0])
-//             return res.status(404).json("No post with that id")
-//         return res.status(200).json(posts[0])
-//     }
-//     catch (err) {
-//         return res.status(500).json("Server error - db comm")
-//     }
-// }
+export const getPost = async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection();
+        const result = await connection.execute(
+            `SELECT * FROM posts WHERE id = :id`,
+            [req.params.id]
+        );
+        res.status(200).json(result.rows.map(item => {
+            return {
+                id : item[0],
+                title: item[1],
+                desc: item[2],
+                dateCreated: item[3],
+                dateUpdated: item[4],
+                author: item[5],
+            }
+        })[0])
+    } catch (err) {
+        console.error(err);
+        res.status(500).json("Server error - db comm")
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+    return res
+}
 
 // export const addPost = (req, res) => {
 //     const token = req.cookies.access_token

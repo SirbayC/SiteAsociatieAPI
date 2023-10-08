@@ -1,10 +1,10 @@
 import express from 'express'
-import { getPosts } from '../controllers/postController.js'
+import { getPosts, getPost } from '../controllers/postController.js'
 
 const router = express.Router()
 
 router.get("/", getPosts)
-// router.get("/:id", getPost)
+router.get("/:id", getPost)
 // router.post("/", addPost
 // router.delete("/:id", deletePost)
 // router.put("/:id", updatePost)
