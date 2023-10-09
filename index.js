@@ -17,7 +17,7 @@ app.use("/auth", authRoutes)
 app.use("/posts", postRoutes)
 
 app.get('/', (req, res) => {
-  res.json("Hi from the server! v2.1")
+  res.json("Hi from the server! v2.2")
 });
 
 const PORT = process.env.PORT
