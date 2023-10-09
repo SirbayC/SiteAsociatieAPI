@@ -1,5 +1,6 @@
-import oracledb from "oracledb";
+import oracledb from "oracledb"
 import jwt from "jsonwebtoken"
+import 'dotenv/config'
 
 export const getPosts = async (req, res) => {
     let connection;
@@ -67,31 +68,36 @@ export const getPost = async (req, res) => {
     return res
 }
 
-// export const addPost = (req, res) => {
-//     const token = req.cookies.access_token
-//     if(!token) return res.status(401).json("Not Authenticated")
+export const addPost = (req, res) => {
+    const token = req.body.token
+    if(!token) return res.status(401).json("Not Authenticated")
+    let error = false
+    jwt.verify(token, process.env.JWTKEY, (err, userInfo) => {
+        error = err || userInfo.id != process.env.ADMIN_USERNAME
+    })
 
-//     jwt.verify(token,"jwtkey",(err,userInfo)=>{
-//         if(err) return res.status(403).json("Token is invalid!")
+    if (error)
+        return res.status(403).json("Invalid token!")
 
-//         const q = "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`) VALUES (?)"
-//         const values = [
-//             req.body.title,
-//             req.body.desc,
-//             req.body.img,
-//             req.body.cat,
-//             req.body.date,
-//             userInfo.id
-//         ]
+    //     const q = "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`) VALUES (?)"
+    //     const values = [
+    //         req.body.title,
+    //         req.body.desc,
+    //         req.body.img,
+    //         req.body.cat,
+    //         req.body.date,
+    //         userInfo.id
+    //     ]
 
-//         db.query(q, [values], (err,data) => {
-//             if(err){
-//                 return res.status(500).json(err)
-//             }
-//             return res.status(200).json("Post has been created")
-//         })
-//     })
-// }
+    //     db.query(q, [values], (err,data) => {
+    //         if(err){
+    //             return res.status(500).json(err)
+    //         }
+    //         
+    //     })
+    // })
+    return res.status(200).json("Post has been created")
+}
 
 // export const deletePost = (req, res) => {
 //     const token = req.cookies.access_token
