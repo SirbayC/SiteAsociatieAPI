@@ -7,12 +7,12 @@ export const getPosts = async (req, res) => {
     try {
         connection = await oracledb.getConnection();
         const result = await connection.execute(`SELECT * FROM posts`);
-        if(result.rows.length == 0){
+        if (result.rows.length == 0) {
             return res.status(404).json("No post with that id!")
         }
         res.status(200).json(result.rows.map(item => {
             return {
-                id : item[0],
+                id: item[0],
                 title: item[1],
                 desc: item[2],
                 dateCreated: item[3],
@@ -45,7 +45,7 @@ export const getPost = async (req, res) => {
         );
         res.status(200).json(result.rows.map(item => {
             return {
-                id : item[0],
+                id: item[0],
                 title: item[1],
                 desc: item[2],
                 dateCreated: item[3],
@@ -68,9 +68,9 @@ export const getPost = async (req, res) => {
     return res
 }
 
-export const addPost = (req, res) => {
+export const addPost = async (req, res) => {
     const token = req.body.token
-    if(!token) return res.status(401).json("Not Authenticated")
+    if (!token) return res.status(401).json("Not Authenticated")
     let error = false
     jwt.verify(token, process.env.JWTKEY, (err, userInfo) => {
         error = err || userInfo.id != process.env.ADMIN_USERNAME
@@ -79,24 +79,30 @@ export const addPost = (req, res) => {
     if (error)
         return res.status(403).json("Invalid token!")
 
-    //     const q = "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`) VALUES (?)"
-    //     const values = [
-    //         req.body.title,
-    //         req.body.desc,
-    //         req.body.img,
-    //         req.body.cat,
-    //         req.body.date,
-    //         userInfo.id
-    //     ]
-
-    //     db.query(q, [values], (err,data) => {
-    //         if(err){
-    //             return res.status(500).json(err)
-    //         }
-    //         
-    //     })
-    // })
-    return res.status(200).json("Post has been created")
+    let connection;
+    try {
+        connection = await oracledb.getConnection();
+        console.log("writing" + req.body)
+        const result = await connection.execute(
+            "INSERT INTO posts(title, content)" +
+            " VALUES " +
+            "(:1, :2)",
+            [req.body.title, req.body.content],
+            { autoCommit: true });
+        res.status(200).json("Post added!")
+    } catch (err) {
+        console.error(err);
+        res.status(500).json("Server error - db comm")
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+    return res
 }
 
 // export const deletePost = (req, res) => {
